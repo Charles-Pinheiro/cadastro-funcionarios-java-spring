@@ -2,6 +2,8 @@ package com.apirest.backend.controllers;
 
 import java.util.List;
 
+import com.apirest.backend.errors.BadRequest;
+import com.apirest.backend.errors.NotFound;
 import com.apirest.backend.models.Funcionario;
 import com.apirest.backend.repo.FuncionarioRepo;
 
@@ -33,12 +35,36 @@ public class FuncionarioController {
 
     @GetMapping("/funcionario/{id}")
     public Funcionario listaPorId(@PathVariable(value="id") long id) {
-        return funcionarioRepo.findById(id);
+        Funcionario funcionario = funcionarioRepo.findById(id);
+        if (funcionario == null) {
+            throw new NotFound();
+        }
+        return funcionario;
     }
 
     @PostMapping("/funcionario")
     @ResponseStatus(HttpStatus.CREATED)
     public Funcionario salvaFuncionario(@RequestBody Funcionario funcionario) {
+        String[] dados = {
+            funcionario.getNome(),
+            funcionario.getCargo(),
+            funcionario.getImgURL(),
+        };
+        for (String elemento: dados) {
+            if (elemento == null) {
+                throw new BadRequest();
+            }
+        }
+
+        Number[] dados2 = {
+            funcionario.getIdade(),
+            funcionario.getSalario()
+        };
+        for (Number elemento: dados2) {
+            if (elemento == null) {
+                throw new BadRequest();
+            }
+        }
         return funcionarioRepo.save(funcionario);
     }
 
@@ -52,6 +78,27 @@ public class FuncionarioController {
     @PutMapping("/funcionario/{id}")
     public Funcionario atualizaFuncionario(@PathVariable(value="id") long id, @RequestBody Funcionario funcionario) {
         funcionario.setId(id);
+            
+        String[] dados = {
+            funcionario.getNome(),
+            funcionario.getCargo(),
+            funcionario.getImgURL(),
+        };
+        for (String elemento: dados) {
+            if (elemento == null) {
+                throw new BadRequest();
+            }
+        }
+
+        Number[] dados2 = {
+            funcionario.getIdade(),
+            funcionario.getSalario()
+        };
+        for (Number elemento: dados2) {
+            if (elemento == null) {
+                throw new BadRequest();
+            }
+        }
         return funcionarioRepo.save(funcionario);
     }
 }
